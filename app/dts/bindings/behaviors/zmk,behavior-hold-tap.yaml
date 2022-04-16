@@ -33,7 +33,7 @@ properties:
     type: boolean
   trigger-delay-ms:
     type: int
-    default: -1
+    default: 0
   hold-trigger-key-positions:
     type: array
     required: false
