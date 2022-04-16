@@ -436,6 +436,27 @@ static void decide_positional_hold(struct active_hold_tap *hold_tap) {
     delay_tapping_term_event(hold_tap);
 }
 
+static void delay_tapping_term_event(struct active_hold_tap *hold_tap) {
+    hold_tap->delay_timer_is_active = true;
+    k_work_cancel_delayable(&hold_tap->work);
+    k_work_schedule(&hold_tap->work, K_MSEC(hold_tap->config->delay_timer_ms));
+} 
+
+static void decide_timer(struct active_hold_tap *hold_tap,
+                         int64_t timestamp) {
+    if (hold_tap->delay_timer_is_active) {
+        if (timestamp > (hold_tap->last_key_timestamp + hold_tap->config->delay_timer_ms)
+        ) {
+            decide_hold_tap(hold_tap, HT_DELAY_TIMER_EVENT);
+        }
+    } else {
+        if (timestamp > (hold_tap->timestamp + hold_tap->config->tapping_term_ms)
+        ) {
+            decide_hold_tap(hold_tap, HT_TIMER_EVENT);
+        }
+    }
+}
+
 static void decide_hold_tap(struct active_hold_tap *hold_tap,
                             enum decision_moment decision_moment) {
     if (hold_tap->status != STATUS_UNDECIDED) {
@@ -643,27 +664,6 @@ static int keycode_state_changed_listener(const zmk_event_t *eh) {
             ev->state ? "down" : "up");
     capture_event(eh);
     return ZMK_EV_EVENT_CAPTURED;
-}
-
-static void delay_tapping_term_event(struct active_hold_tap *hold_tap) {
-    hold_tap->delay_timer_is_active = true;
-    k_work_cancel_delayable(&hold_tap->work);
-    k_work_schedule(&hold_tap->work, K_MSEC(hold_tap->config->delay_timer_ms));
-} 
-
-static void decide_timer(struct active_hold_tap *hold_tap,
-                         int64_t timestamp) {
-    if (hold_tap->delay_timer_is_active) {
-        if (timestamp > (hold_tap->last_key_timestamp + hold_tap->config->delay_timer_ms)
-        ) {
-            decide_hold_tap(hold_tap, HT_DELAY_TIMER_EVENT);
-        }
-    } else {
-        if (timestamp > (hold_tap->timestamp + hold_tap->config->tapping_term_ms)
-        ) {
-            decide_hold_tap(hold_tap, HT_TIMER_EVENT);
-        }
-    }
 }
 
 int behavior_hold_tap_listener(const zmk_event_t *eh) {
