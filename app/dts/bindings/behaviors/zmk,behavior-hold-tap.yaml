@@ -31,7 +31,7 @@ properties:
       - "tap-unless-interrupted"
   retro-tap:
     type: boolean
-  trigger-delay-ms:
+  delay-timer-ms:
     type: int
     default: 0
   hold-trigger-key-positions:
