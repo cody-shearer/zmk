@@ -411,21 +411,6 @@ static void delay_tapping_term_event(struct active_hold_tap *hold_tap) {
     k_work_schedule(&hold_tap->work, K_MSEC(hold_tap->config->delay_timer_ms));
 } 
 
-static void decide_timer(struct active_hold_tap *hold_tap,
-                         int64_t timestamp) {
-    if (hold_tap->delay_timer_is_active) {
-        if (timestamp > (hold_tap->last_key_timestamp + hold_tap->config->delay_timer_ms)
-        ) {
-            decide_hold_tap(hold_tap, HT_DELAY_TIMER_EVENT);
-        }
-    } else {
-        if (timestamp > (hold_tap->timestamp + hold_tap->config->tapping_term_ms)
-        ) {
-            decide_hold_tap(hold_tap, HT_TIMER_EVENT);
-        }
-    }
-}
-
 // begin a delayed event if the positional conditions for a hold decision are met.
 static void decide_positional_hold(struct active_hold_tap *hold_tap) {
     // Only start the hold event if the positional hold/tap feature is enabled.
@@ -497,6 +482,21 @@ static void decide_hold_tap(struct active_hold_tap *hold_tap,
     undecided_hold_tap = NULL;
     press_binding(hold_tap);
     release_captured_events();
+}
+
+static void decide_timer(struct active_hold_tap *hold_tap,
+                         int64_t timestamp) {
+    if (hold_tap->delay_timer_is_active) {
+        if (timestamp > (hold_tap->last_key_timestamp + hold_tap->config->delay_timer_ms)
+        ) {
+            decide_hold_tap(hold_tap, HT_DELAY_TIMER_EVENT);
+        }
+    } else {
+        if (timestamp > (hold_tap->timestamp + hold_tap->config->tapping_term_ms)
+        ) {
+            decide_hold_tap(hold_tap, HT_TIMER_EVENT);
+        }
+    }
 }
 
 static void decide_retro_tap(struct active_hold_tap *hold_tap) {
