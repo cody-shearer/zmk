@@ -20,6 +20,9 @@ properties:
     default: -1
   quick_tap_ms: # deprecated
     type: int
+  delay-timer-ms:
+    type: int
+    default: 0
   flavor:
     type: string
     required: false
@@ -31,9 +34,6 @@ properties:
       - "tap-unless-interrupted"
   retro-tap:
     type: boolean
-  delay-timer-ms:
-    type: int
-    default: 0
   hold-trigger-key-positions:
     type: array
     required: false
