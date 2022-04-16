@@ -73,7 +73,7 @@ struct active_hold_tap {
     int64_t timestamp;
     enum status status;
     const struct behavior_hold_tap_config *config;
-    struct k_delayed_work work;
+    struct k_work_delayable work;
     bool work_is_cancelled;
     int64_t last_key_timestamp;
     bool delay_timer_is_active;
@@ -226,7 +226,7 @@ static struct active_hold_tap *store_hold_tap(uint32_t position, uint32_t param_
 static void clear_hold_tap(struct active_hold_tap *hold_tap) {
     hold_tap->position = ZMK_BHV_HOLD_TAP_POSITION_NOT_USED;
     hold_tap->status = STATUS_UNDECIDED;
-    hold_tap->work_is_cancelled = true;
+    hold_tap->work_is_cancelled = false;
     hold_tap->delay_timer_is_active = false;
     hold_tap->last_key_position = -1;
 }
@@ -536,7 +536,6 @@ static int on_hold_tap_binding_pressed(struct zmk_behavior_binding *binding,
 
     // if this behavior was queued we have to adjust the timer to only
     // wait for the remaining time.
-    hold_tap->work_is_cancelled = false;
     int32_t tapping_term_ms_left = (hold_tap->timestamp + cfg->tapping_term_ms) - k_uptime_get();
     k_work_schedule(&hold_tap->work, K_MSEC(tapping_term_ms_left));
 
