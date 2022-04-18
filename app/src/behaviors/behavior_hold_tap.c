@@ -278,7 +278,7 @@ static void decide_tap_unless_interrupted(struct active_hold_tap *hold_tap,
         hold_tap->status = STATUS_HOLD_INTERRUPT;
         return;
     case HT_QUICK_TAP:
-        hold_tap->status = STATUS_HOLD_INTERRUPT;
+        hold_tap->status = STATUS_TAP;
         return;
     default:
         return;
