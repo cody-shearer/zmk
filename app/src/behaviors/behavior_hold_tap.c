@@ -408,29 +408,13 @@ static int release_binding(struct active_hold_tap *hold_tap) {
     return behavior_keymap_binding_released(&binding, event);
 }
 
-int bsearch(int narr[], int d, int b, int a)
-{
-    if (b >= d) {
-        int midval = d + (b - d) / 2;
-        if (narr[midval] == a) {
+static bool is_last_key_trigger_key(struct active_hold_tap *hold_tap) {    
+    for (int i = 0; i < hold_tap->config->hold_trigger_key_positions_len; i++) {
+        if (hold_tap->config->hold_trigger_key_positions[i] == hold_tap->last_key_position) {
             return true;
         }
-        if (narr[midval] > a) {
-            return bsearch(narr, d, midval - 1, a);
-        }        
-        return bsearch(narr, midval + 1, b, a);
     }
     return false;
-}
-
-static bool is_last_key_trigger_key(struct active_hold_tap *hold_tap) {    
-    return bsearch(hold_tap->config->hold_trigger_key_positions, 0, sizeof(hold_tap->config->hold_trigger_key_positions) / sizeof(hold_tap->config->hold_trigger_key_positions[0] - 1), hold_tap->last_key_position)
-    //for (int i = 0; i < hold_tap->config->hold_trigger_key_positions_len; i++) {
-    //    if (hold_tap->config->hold_trigger_key_positions[i] == hold_tap->last_key_position) {
-    //        return true;
-    //    }
-    //}
-    //return false;
 }
 
 static void delay_tapping_term_event(struct active_hold_tap *hold_tap) {
