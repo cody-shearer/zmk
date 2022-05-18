@@ -22,6 +22,9 @@ properties:
     type: int
   global-quick-tap:
     type: boolean
+  delay-timer-ms:
+    type: int
+    default: 0
   flavor:
     type: string
     required: false
